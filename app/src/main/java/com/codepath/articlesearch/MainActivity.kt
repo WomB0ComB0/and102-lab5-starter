@@ -23,8 +23,8 @@ fun createJson() = Json {
 }
 
 private const val TAG = "MainActivity/"
-private val SEARCH_API_KEY = BuildConfig.API_KEY
-private val ARTICLE_SEARCH_URL =
+private const val SEARCH_API_KEY = BuildConfig.API_KEY
+private const val ARTICLE_SEARCH_URL =
     "https://api.nytimes.com/svc/search/v2/articlesearch.json?api-key=${SEARCH_API_KEY}"
 
 class MainActivity : AppCompatActivity() {
@@ -48,7 +48,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         val client = AsyncHttpClient()
-        client.get(ARTICLE_SEARCH_URL, object : JsonHttpResponseHandler() {
+        client[ARTICLE_SEARCH_URL, object : JsonHttpResponseHandler() {
             override fun onFailure(
                 statusCode: Int,
                 headers: Headers?,
@@ -65,7 +65,7 @@ class MainActivity : AppCompatActivity() {
                         SearchNewsResponse.serializer(),
                         json.jsonObject.toString()
                     )
-                    parsedJson.response?.docs?.let { list ->
+                    parsedJson.response?.docs?.let { _ ->
                         lifecycleScope.launch {
                             (application as ArticleApplication).db.articleDao().getAll().collect { databaseList ->
                                 databaseList.map { entity ->
@@ -78,21 +78,17 @@ class MainActivity : AppCompatActivity() {
                                 }.also { mappedList ->
                                     articles.clear()
                                     articles.addAll(mappedList)
-                                    articleAdapter.notifyDataSetChanged()
+                                    articleAdapter.run { notifyDataSetChanged() }
                                 }
                             }
                         }
-
                     }
-
-
-
                 } catch (e: JSONException) {
                     Log.e(TAG, "Exception: $e")
                 }
             }
 
-        })
+        }]
 
     }
 }

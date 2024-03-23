@@ -12,7 +12,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintWidth_percent=".35" />
+        app:layout_constraintWidth_percent=".35"
+        android:contentDescription="@string/article_image" />
 
     <TextView
         android:id="@+id/mediaTitle"
@@ -23,7 +24,7 @@
         android:layout_marginEnd="10dp"
         android:ellipsize="end"
         android:maxLines="2"
-        android:text="Title"
+        android:text="@string/article_title"
         android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Title"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/mediaImage"
@@ -38,7 +39,7 @@
         android:layout_marginEnd="10dp"
         android:ellipsize="end"
         android:maxLines="4"
-        android:text="Abstract"
+        android:text="@string/article_Abstract"
         android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Subtitle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/mediaImage"

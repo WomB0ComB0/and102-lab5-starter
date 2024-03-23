@@ -28,7 +28,7 @@ class DetailsActivity : AppCompatActivity() {
         // Set title and abstract information for the article
         titleTextView.text = article.headline
         bylineTextView.text = article.byline
-        abstractTextView.text = article.abstract
+        abstractTextView.text = article.articleAbstract
 
         // Load the media image
         Glide.with(this)
