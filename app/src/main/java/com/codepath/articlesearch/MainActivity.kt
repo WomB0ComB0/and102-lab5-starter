@@ -1,5 +1,6 @@
 package com.codepath.articlesearch
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
@@ -10,7 +11,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.codepath.articlesearch.databinding.ActivityMainBinding
 import com.codepath.asynchttpclient.AsyncHttpClient
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler
-import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import okhttp3.Headers
@@ -58,6 +58,7 @@ class MainActivity : AppCompatActivity() {
                 Log.e(TAG, "Failed to fetch articles: $statusCode")
             }
 
+            @SuppressLint("NotifyDataSetChanged")
             override fun onSuccess(statusCode: Int, headers: Headers, json: JSON) {
                 Log.i(TAG, "Successfully fetched articles: $json")
                 try {
@@ -87,8 +88,6 @@ class MainActivity : AppCompatActivity() {
                     Log.e(TAG, "Exception: $e")
                 }
             }
-
         }]
-
     }
 }
