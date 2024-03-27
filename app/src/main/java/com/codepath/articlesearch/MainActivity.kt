@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.codepath.articlesearch.databinding.ActivityMainBinding
 import com.codepath.asynchttpclient.AsyncHttpClient
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler
+import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import okhttp3.Headers
@@ -47,6 +48,24 @@ class MainActivity : AppCompatActivity() {
             articlesRecyclerView.addItemDecoration(dividerItemDecoration)
         }
 
+        lifecycleScope.launch {
+            (application as ArticleApplication).db.articleDao().getAll().collect { databaseList ->
+                databaseList.map { entity ->
+                    DisplayArticle(
+                        entity.headline,
+                        entity.articleAbstract,
+                        entity.byline,
+                        entity.mediaImageUrl
+                    )
+                }.also { mappedList ->
+                    articles.clear()
+                    articles.addAll(mappedList)
+                    articleAdapter.run { notifyDataSetChanged() }
+                }
+            }
+        }
+
+
         val client = AsyncHttpClient()
         client[ARTICLE_SEARCH_URL, object : JsonHttpResponseHandler() {
             override fun onFailure(
@@ -66,22 +85,17 @@ class MainActivity : AppCompatActivity() {
                         SearchNewsResponse.serializer(),
                         json.jsonObject.toString()
                     )
-                    parsedJson.response?.docs?.let { _ ->
-                        lifecycleScope.launch {
-                            (application as ArticleApplication).db.articleDao().getAll().collect { databaseList ->
-                                databaseList.map { entity ->
-                                    DisplayArticle(
-                                        entity.headline,
-                                        entity.articleAbstract,
-                                        entity.byline,
-                                        entity.mediaImageUrl
-                                    )
-                                }.also { mappedList ->
-                                    articles.clear()
-                                    articles.addAll(mappedList)
-                                    articleAdapter.run { notifyDataSetChanged() }
-                                }
-                            }
+                    parsedJson.response?.docs?.let { list ->
+                        lifecycleScope.launch(IO) {
+                            (application as ArticleApplication).db.articleDao().deleteAll()
+                            (application as ArticleApplication).db.articleDao().insertAll(list.map {
+                                ArticleEntity(
+                                    headline = it.headline?.main,
+                                    articleAbstract = it.abstract,
+                                    byline = it.byline?.original,
+                                    mediaImageUrl = it.mediaImageUrl
+                                )
+                            })
                         }
                     }
                 } catch (e: JSONException) {
